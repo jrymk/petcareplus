@@ -19,7 +19,7 @@ def serve_mypet_page():
 def get_user_pets():
     with get_psql_conn().cursor() as cur:
         cur.execute(f"""
-            SELECT *
+            SELECT name, species, breed, bdate, gender
             FROM PET
             WHERE owned_by = {session.get("user_id")}
             ORDER BY pet_id ASC
@@ -31,10 +31,8 @@ def get_user_pets():
         
         # convert query result into dataframe and return
         pets_df = pd.DataFrame(results, columns=[
-            "pet_id", "name", "species", "breed", "bdate", "gender", "owned_by"
+            "name", "species", "breed", "bdate", "gender"
         ])
-        pets_df = pets_df.drop(columns=["pet_id", "owned_by"])
-        
         return jsonify({
             'tableHTML': pets_df.to_html(index=False)
         })
@@ -48,7 +46,7 @@ def append_pet():
     pet_breed = "'" + request.json['petBreed'] + "'"
     if pet_breed == "''": pet_breed = "NULL"  # pet_breed is left blank
     pet_bdate = "'" + str(request.json['petBdate']) + "'"
-    if pet_bdate == "''": pet_bdate = "NULL"  # pet_breed is left blank
+    if pet_bdate == "''": pet_bdate = "NULL"  # pet_bdate is left blank
     pet_gender = "'" + request.json['petGender'] + "'"
     
     with get_psql_conn().cursor() as cur:

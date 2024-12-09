@@ -8,7 +8,7 @@
     <h2>My Pets</h2>
 
     <div id="mypets-table"></div>
-
+    
     <h2>Append A Pet</h2>
     <form action="javascript: appendPet();">
         <label for="pet-name">Name</label><br>
@@ -20,7 +20,8 @@
         <label for="pet-bdate">Bdate</label><br>
         <input type="date" id="pet-bdate" name="pet-bdate"><br>
         <label for="pet-gender">Gender</label><br>
-        <select id="pet-gender" name="pet-gender">
+        <select id="pet-gender" name="pet-gender" required>
+            <option disabled selected value> -- select pet gender -- </option>
             <option value="M">Male</option>
             <option value="F">Female</option>
             <option value="O">Other</option>

@@ -4,12 +4,14 @@ from db import init_db_conn
 
 from login import login
 from client_mypets import client_mypets
+from client_appointments import client_appointments
 
 
 # Global Flask app (SUBJECT TO CHANGE)
 app = Flask(__name__, template_folder="../frontend/templates", static_folder="../frontend/static")
 app.register_blueprint(login)
 app.register_blueprint(client_mypets)
+app.register_blueprint(client_appointments)
 
 
 # Initialize the app and connect to the database.

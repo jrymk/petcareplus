@@ -1,0 +1,23 @@
+<html>
+<head>
+    <title>PetCare+</title>
+</head>
+<body>
+    <h1><a href='/'>PetCare+</a></h1>
+    <h2>Recent Appointments</h2>
+    <select id="app-status" name="app-status">
+        <option disabled selected value> -- select appointment status -- </option>
+        <option value="O">Completed</option>
+        <option value="P">Incoming</option>
+        <option value="C">Cancelled</option>
+    </select><br><br>
+    <div id="appointment-record-table"></div>
+    
+    <ul>
+        <li><a href="/client-appointments/make">Make An Appointment</a></li>
+        <li><a href="/client-appointments/cancel">Cancel An Appointment</a></li>
+    </ul>
+
+    <script src="{{url_for('static', filename='client-appointments.js')}}"></script>
+</body>
+</html>

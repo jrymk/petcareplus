@@ -1,6 +1,5 @@
 const appStatusSelect = document.getElementById('app-status')
-appStatusSelect.addEventListener("change", getUserAppointments);
-
+appStatusSelect?.addEventListener("change", getUserAppointments);
 
 function getUserAppointments() {
     const status = document.getElementById('app-status').value;

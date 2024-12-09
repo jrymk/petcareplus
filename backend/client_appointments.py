@@ -6,15 +6,21 @@ import pandas as pd
 
 client_appointments = Blueprint("client_appointments", __name__)
 
-
+###### serving pages ######
 @client_appointments.get('/client-appointments')
 def serve_client_appointment_page():
     if not session.get("login"):
         return redirect("/login")
-    
     return render_template("client-appointments.html")
 
+@client_appointments.get('/client-appointments/make')
+def serve_client_appointment_make_page():
+    if not session.get("login"):
+        return redirect("/login")
+    return render_template("client-appointments-make.html")
 
+
+###### api calls ######
 @client_appointments.post('/get_user_appointments')
 def get_user_appointments():
     status = "'" + request.json['status'] + "'"

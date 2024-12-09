@@ -76,3 +76,25 @@ def get_branch_services():
         return jsonify({
             'services': results
         })
+
+
+@utils.post('/get_user_pending_appointments')
+def get_user_pending_appointments():
+    with get_psql_conn().cursor() as cur:
+        cur.execute(f"""
+            SELECT appointment_id, datetime, created_at,
+                S.service_name, B.branch_name, D.name
+            FROM APPOINTMENT AS AP
+                JOIN SERVICE AS S ON AP.for_service = S.service_id
+                JOIN BRANCH AS B ON AP.at_branch = B.branch_id
+                JOIN DOCTOR AS D ON AP.chosen_doctor = D.doctor_id
+            WHERE made_by_user = {session.get("user_id")}
+                AND status = 'P'
+            ORDER BY appointment_id ASC
+        """)
+        get_psql_conn().commit()
+        results = cur.fetchall()
+        
+        return jsonify({
+            'apps': results
+        })

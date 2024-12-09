@@ -20,6 +20,12 @@ def serve_client_appointment_make_page():
         return redirect("/login")
     return render_template("client-appointments-make.html")
 
+@client_appointments.get('/client-appointments/cancel')
+def serve_client_appointment_cancel_page():
+    if not session.get("login"):
+        return redirect("/login")
+    return render_template("client-appointments-cancel.html")
+
 
 ###### api calls ######
 @client_appointments.post('/get_user_appointments_table')
@@ -153,3 +159,22 @@ def append_appointment():
             get_psql_conn().rollback()
             return jsonify({'success': 0, 'error': 'Failed to insert record.'})
         return jsonify({'success': 1})
+    
+
+@client_appointments.post('/cancel_appointment')
+def cancel_appointment():
+    app_id = "'" + request.json['appId'] + "'"
+    
+    with get_psql_conn().cursor() as cur:
+        try:  
+            cur.execute(f"""
+                UPDATE APPOINTMENT
+                SET status = 'C'
+                WHERE appointment_id = {app_id} AND
+                    made_by_user = {session.get("user_id")}
+            """)
+            get_psql_conn().commit()
+            return jsonify({'success': 1})
+        except:
+            get_psql_conn().rollback()
+            return jsonify({'success': 0, 'error': "Failed to update record."})

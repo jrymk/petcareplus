@@ -7,6 +7,23 @@ import pandas as pd
 utils = Blueprint("utils", __name__)
 
 
+@utils.post('/get_user_pets')
+def get_user_pets():
+    with get_psql_conn().cursor() as cur:
+        cur.execute(f"""
+            SELECT *
+            FROM PET
+            WHERE owned_by = {session.get("user_id")}
+            ORDER BY pet_id ASC
+        """)
+        get_psql_conn().commit()
+        results = cur.fetchall()
+        
+        return jsonify({
+            'pets': results
+        })
+
+
 @utils.post('/get_branches')
 def get_branches():
     with get_psql_conn().cursor() as cur:

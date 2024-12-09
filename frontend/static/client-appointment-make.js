@@ -1,8 +1,61 @@
+window.addEventListener("DOMContentLoaded", generatePetOptions);
 window.addEventListener("DOMContentLoaded", generateBranchOptions);
 
 const appBranchSelect = document.getElementById('app-branch')
 appBranchSelect?.addEventListener("change", generateDoctorOptions);
 appBranchSelect?.addEventListener("change", generateServiceOptions);
+
+
+function generatePetOptions(){
+    fetch('/get_user_pets', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        var pets = data.pets;
+        var selectPets = document.getElementById('app-pet-multipleselect');
+        for(var i = 0; i < pets.length; i++) {  // iterates over branches and add options
+            var checkboxLabel = document.createElement("label");
+            var checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.value = parseInt(pets[i][0]);  // pet_id
+            
+            checkboxLabel.appendChild(checkbox);
+            checkboxLabel.innerHTML += pets[i][1] + "  "  // pet name
+            selectPets.appendChild(checkboxLabel);
+        }
+
+        // add event listeners to dynamically created inputs
+        var selectPetsItems = selectPets.getElementsByTagName("input");
+        for(var i = 0; i < selectPetsItems.length; i++)
+            selectPetsItems[i].addEventListener("change", checkEnableDisablePetCheckbox);
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
+}
+
+function checkEnableDisablePetCheckbox(){
+    var selectPets = document.getElementById('app-pet-multipleselect');
+    var selectPetsItems = selectPets.getElementsByTagName("input");
+
+    var cnt = 0;  // count of checked checkboxes
+    for(var i = 0; i < selectPetsItems.length; i++)
+        if(selectPetsItems[i].checked) cnt++;
+
+    if(cnt < 3){
+        for(var i = 0; i < selectPetsItems.length; i++)
+            selectPetsItems[i].disabled = false;  // all checkboxes are activated
+    }
+    else{  // reached maximum limit of checkboxes (3)
+        for(var i = 0; i < selectPetsItems.length; i++)
+            if(!selectPetsItems[i].checked)  // all unchecked checkboxes are disabled
+                selectPetsItems[i].disabled = true;
+    }
+}
 
 function generateBranchOptions(){
     fetch('/get_branches', {

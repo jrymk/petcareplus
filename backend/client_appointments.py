@@ -21,7 +21,7 @@ def serve_client_appointment_make_page():
 
 
 ###### api calls ######
-@client_appointments.post('/get_user_appointments')
+@client_appointments.post('/get_user_appointments_table')
 def get_user_appointments():
     status = "'" + request.json['status'] + "'"
     

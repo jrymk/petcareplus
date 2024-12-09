@@ -2,7 +2,7 @@ window.addEventListener("DOMContentLoaded", getUserPets);
 
 
 function getUserPets() {
-    fetch('/get_user_pets', {
+    fetch('/get_user_pets_table', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

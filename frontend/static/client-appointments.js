@@ -3,7 +3,7 @@ appStatusSelect?.addEventListener("change", getUserAppointments);
 
 function getUserAppointments() {
     const status = document.getElementById('app-status').value;
-    fetch('/get_user_appointments', {
+    fetch('/get_user_appointments_table', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

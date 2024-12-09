@@ -15,7 +15,7 @@ def serve_mypet_page():
     return render_template("client-mypets.html")
 
 
-@client_mypets.post('/get_user_pets')
+@client_mypets.post('/get_user_pets_table')
 def get_user_pets():
     with get_psql_conn().cursor() as cur:
         cur.execute(f"""

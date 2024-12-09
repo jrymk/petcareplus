@@ -43,11 +43,13 @@ def get_user_pets():
 @client_mypets.post('/append_pet')
 def append_pet():
     # Get data from frontend
-    pet_name = request.json['petName']
-    pet_species = request.json['petSpecies']
-    pet_breed = request.json['petBreed']
-    pet_bdate = request.json['petBdate']
-    pet_gender = request.json['petGender']
+    pet_name = "'" + request.json['petName'] + "'"
+    pet_species = "'" + request.json['petSpecies'] + "'"
+    pet_breed = "'" + request.json['petBreed'] + "'"
+    if pet_breed == "''": pet_breed = "NULL"  # pet_breed is left blank
+    pet_bdate = "'" + str(request.json['petBdate']) + "'"
+    if pet_bdate == "''": pet_bdate = "NULL"  # pet_breed is left blank
+    pet_gender = "'" + request.json['petGender'] + "'"
     
     with get_psql_conn().cursor() as cur:
         cur.execute(f"""
@@ -61,11 +63,10 @@ def append_pet():
             return jsonify({'success': 0, 'error': 'A user can only register 5 pets.'})
         
         # Insert the pet data
-        print(pet_name, pet_species, pet_breed, str(pet_bdate), pet_gender)
         cur.execute(f"""
             INSERT INTO PET(name, species, breed, bdate, gender, owned_by)
-            VALUES('{pet_name}', '{pet_species}', '{pet_breed}',
-                   '{str(pet_bdate)}', '{pet_gender}', {session.get("user_id")})
+            VALUES({pet_name}, {pet_species}, {pet_breed},
+                   {pet_bdate}, {pet_gender}, {session.get("user_id")})
         """)
         get_psql_conn().commit()
         return jsonify({'success': 1})

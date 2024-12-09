@@ -26,7 +26,7 @@ def get_doctor_schedule():
     try:
         with get_psql_conn().cursor() as cur:
             cur.execute(f"""
-                SELECT a.datetime, u.username, u.contact, p.name, a.status, s.service_name, s.description, s.duration, b.branch_name
+                SELECT a.appointment_id, a.datetime, u.username, u.contact, p.name, a.status, s.service_name, s.description, s.duration, b.branch_name
                 FROM APPOINTMENT as a
                 JOIN "USER" as u ON a.made_by_user = u.user_id
                 JOIN PET_PARTICIPATION as pp ON pp.appointment_id = a.appointment_id
@@ -43,7 +43,7 @@ def get_doctor_schedule():
             # Process results into a dictionary with days of the week as keys
             schedule = {day: [] for day in ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']}
             for row in results:
-                day_of_week = row[0].strftime('%a')
+                day_of_week = row[1].strftime('%a')
                 schedule[day_of_week].append(row)
 
             # Determine the maximum number of appointments in a single day
@@ -65,13 +65,14 @@ def get_doctor_schedule():
                 for day in ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']:
                     if i < len(schedule[day]):
                         appointment = schedule[day][i]
-                        tableHTML += f"<td style='border-width: 1px; background-color: {'#DDDDDD' if appointment[4] == 'O' else '#FFDDDD' if appointment[4] == 'C' else '#DDFFDD'}'>"
-                        tableHTML += f"{appointment[1]}<br>{appointment[2]}<br>{appointment[3]}<br>"
-                        tableHTML += f"<span title={appointment[6]}>{appointment[5]}</span> <span style='color: #888888'>{
-                            (str(appointment[7] // 60) + "小時") if (appointment[7] // 60) != 0 else ""
-                            + (str(appointment[7] % 60) + "分鐘") if (appointment[7] % 60) != 0 else ""}</span>"
-                        tableHTML += f"<br>{appointment[8]}"
-                        tableHTML += f"<br><a href='todo'>Enter</a></td>"
+                        tableHTML += f"<td style='border-width: 1px; background-color: {'#DDDDDD' if appointment[5] == 'O' else '#FFDDDD' if appointment[5] == 'C' else '#DDFFDD'}'>"
+                        tableHTML += f"<span style='font-weight: 900; font-size: 1.2em;'>{appointment[1].strftime('%H:%M')}</span>"
+                        tableHTML += f"<span style='font-size: 0.8em; float: right'>{appointment[9]}</span>" # branch name
+                        tableHTML += f"<br>{appointment[2]}<br>{appointment[3] if appointment[3] is not None else 'Contact N/A'}<br>{appointment[4]}<br>" # username, contact, pet name
+                        tableHTML += f"<span title={appointment[7]}>{appointment[6]}</span> <span style='color: #888888'>{
+                            (str(appointment[8] // 60) + "小時") if (appointment[8] // 60) != 0 else ""
+                            + (str(appointment[8] % 60) + "分鐘") if (appointment[8] % 60) != 0 else ""}</span>"
+                        tableHTML += f"<br><a href='/doctor-appointment?appointment_id={appointment[0]}'>Enter</a></td>"
                     else:
                         tableHTML += "<td style='border-width: 1px'></td>"
                 tableHTML += "</tr>"
@@ -83,60 +84,3 @@ def get_doctor_schedule():
         return jsonify({'tableHTML': f"<p>Failed to retrieve schedule. Error: {str(e)}</p>"})
     finally:
         get_psql_conn().commit()
-
-    
-
-# @client_mypets.post('/get_user_pets')
-# def get_user_pets():
-#     with get_psql_conn().cursor() as cur:
-#         cur.execute(f"""
-#             SELECT *
-#             FROM PET
-#             WHERE owned_by = {session.get("user_id")}
-#             ORDER BY pet_id ASC
-#         """)
-#         get_psql_conn().commit()
-#         results = cur.fetchall()
-#         if len(results) == 0:  # user has no pets
-#             return jsonify({'tableHTML': "<p>You don't have any pets yet.</p>"})
-        
-#         # convert query result into dataframe and return
-#         pets_df = pd.DataFrame(results, columns=[
-#             "pet_id", "name", "species", "breed", "bdate", "gender", "owned_by"
-#         ])
-#         pets_df = pets_df.drop(columns=["pet_id", "owned_by"])
-        
-#         return jsonify({
-#             'tableHTML': pets_df.to_html(index=False)
-#         })
-
-
-# @client_mypets.post('/append_pet')
-# def append_pet():
-#     # Get data from frontend
-#     pet_name = request.json['petName']
-#     pet_species = request.json['petSpecies']
-#     pet_breed = request.json['petBreed']
-#     pet_bdate = request.json['petBdate']
-#     pet_gender = request.json['petGender']
-    
-#     with get_psql_conn().cursor() as cur:
-#         cur.execute(f"""
-#             SELECT *
-#             FROM PET
-#             WHERE owned_by = {session.get("user_id")}
-#         """)
-#         get_psql_conn().commit()
-#         results = cur.fetchall()
-#         if len(results) >= 5:  # check num. of pets
-#             return jsonify({'success': 0, 'error': 'A user can only register 5 pets.'})
-        
-#         # Insert the pet data
-#         print(pet_name, pet_species, pet_breed, str(pet_bdate), pet_gender)
-#         cur.execute(f"""
-#             INSERT INTO PET(name, species, breed, bdate, gender, owned_by)
-#             VALUES('{pet_name}', '{pet_species}', '{pet_breed}',
-#                    '{str(pet_bdate)}', '{pet_gender}', {session.get("user_id")})
-#         """)
-#         get_psql_conn().commit()
-#         return jsonify({'success': 1})

@@ -18,5 +18,50 @@
     <h1>PetCare+</h1>
     <h2>Welcome, Doctor {{username}}!</h2>
 
-    
+    <div id="appointment-details" data-appointment-id="{{ appointment_id }}"></div>
+
+    <div id="pet-selector"></div>
+
+    <form action="javascript: saveHealthCheck();">
+        <h3>Health Check</h3>
+        <label for="general-observation">General Observation</label><br>
+        <textarea id="general-observation" name="general-observation"></textarea><br>
+        <label for="body-temp">Body Temperature</label><br>
+        <input type="number" id="body-temp" name="body-temp" step="0.1"><br>
+        <label for="pulse-rate">Pulse Rate</label><br>
+        <input type="number" id="pulse-rate" name="pulse-rate"><br>
+        <label for="notes">Notes</label><br>
+        <textarea id="notes" name="notes"></textarea><br>
+        <input type="submit" value="submit">
+    </form>
+
+    <form action="javascript: saveDiagnosis();">
+        <h3>Diagnosis</h3>
+        <label for="symptoms">Symptoms</label><br>
+        <textarea id="symptoms" name="symptoms"></textarea><br>
+        <label for="diagnosis">Diagnosis</label><br>
+        <textarea id="diagnosis" name="diagnosis"></textarea><br>
+        <label for="treatment-plan">Treatment Plan</label><br>
+        <textarea id="treatment-plan" name="treatment-plan"></textarea><br>
+        <label for="follow-up">Follow Up</label><br>
+        <input type="date" id="follow-up" name="follow-up"><br>
+        <input type="submit" value="submit">
+    </form>
+
+    <form action="javascript: savePrescription();">
+        <h3>Prescription</h3>
+        <label for="medication-name">Medication</label><br>
+        <input type="text" id="medication-name" name="medication-name"><br>
+        <label for="medication-dosage">Dosage</label><br>
+        <input type="text" id="medication-dosage" name="medication-dosage"><br>
+        <label for="medication-frequency">Frequency</label><br>
+        <input type="text" id="medication-frequency" name="medication-frequency"><br>
+        <label for="medication-duration">Duration</label><br>
+        <input type="text" id="medication-duration" name="medication-duration"><br>
+        <label for="medication-notes">Notes</label><br>
+        <textarea id="medication-notes" name="medication-notes"></textarea><br>
+        <input type="submit" value="submit">
+    </form>
+
+
 </html>

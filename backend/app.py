@@ -6,6 +6,7 @@ from login import login
 from client_mypets import client_mypets
 from client_appointments import client_appointments
 from doctor_schedule import doctor_schedule
+from doctor_appointment import doctor_appointment
 from utils import utils
 
 
@@ -15,6 +16,7 @@ app.register_blueprint(login)
 app.register_blueprint(client_mypets)
 app.register_blueprint(client_appointments)
 app.register_blueprint(doctor_schedule)
+app.register_blueprint(doctor_appointment)
 app.register_blueprint(utils)
 
 

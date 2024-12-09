@@ -5,6 +5,7 @@ from db import init_db_conn
 from login import login
 from client_mypets import client_mypets
 from client_appointments import client_appointments
+from doctor_schedule import doctor_schedule
 from utils import utils
 
 
@@ -13,6 +14,7 @@ app = Flask(__name__, template_folder="../frontend/templates", static_folder="..
 app.register_blueprint(login)
 app.register_blueprint(client_mypets)
 app.register_blueprint(client_appointments)
+app.register_blueprint(doctor_schedule)
 app.register_blueprint(utils)
 
 

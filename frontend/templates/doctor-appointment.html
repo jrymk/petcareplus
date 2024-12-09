@@ -1,7 +1,7 @@
 <html>
 <head>
     <title>PetCare+</title>
-    <script src="{{url_for('static', filename='doctor-schedule.js')}}"></script>
+    <script src="{{url_for('static', filename='doctor-appointment.js')}}"></script>
     <style>
         table{
             border: 1px solid black;
@@ -18,14 +18,5 @@
     <h1>PetCare+</h1>
     <h2>Welcome, Doctor {{username}}!</h2>
 
-    <div>
-        <a href="#" id="prev-week"><< Previous Week</a>
-        <span style="display:inline-block; width:16px;"></span>
-        <a href="#" id="next-week">Next Week >></a>
-    </div>
-
-    <br>
-
-    <div id="doctor-schedule-table"></div>
-</body>
+    
 </html>

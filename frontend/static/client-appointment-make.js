@@ -1,3 +1,4 @@
+window.addEventListener("DOMContentLoaded", setMinDate);
 window.addEventListener("DOMContentLoaded", generatePetOptions);
 window.addEventListener("DOMContentLoaded", generateBranchOptions);
 
@@ -5,6 +6,15 @@ const appBranchSelect = document.getElementById('app-branch')
 appBranchSelect?.addEventListener("change", generateDoctorOptions);
 appBranchSelect?.addEventListener("change", generateServiceOptions);
 
+
+function setMinDate(){
+    var tomorrowDate = new Date();
+    const offset = tomorrowDate.getTimezoneOffset();
+    tomorrowDate = new Date(tomorrowDate.getTime() - (offset*60*1000) + (24*3600*1000));
+
+    const appDateSelect = document.getElementById('app-datetime');
+    appDateSelect.min = tomorrowDate.toISOString().split('T')[0] + "T00:00";
+}
 
 function generatePetOptions(){
     fetch('/get_user_pets', {
@@ -144,4 +154,42 @@ function generateServiceOptions(){
     });
 
     document.getElementById("app-submit").disabled = false;  // re-activate submit button
+}
+
+function appendAppointment() {
+    var appPets = [];
+    var selectPets = document.getElementById('app-pet-multipleselect');
+    var selectPetsItems = selectPets.getElementsByTagName("input");
+    for(var i = 0; i < selectPetsItems.length; i++)
+        if(selectPetsItems[i].checked)
+            appPets.push(selectPetsItems[i].value)  // make a list of pets
+
+    const appDatetime = document.getElementById('app-datetime').value;
+    const appService = document.getElementById('app-service').value;
+    const appBranch = document.getElementById('app-branch').value;
+    const appDoctor = document.getElementById('app-doctor').value;
+
+    fetch('/append_appointment', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            appDatetime: appDatetime,
+            appService: appService,
+            appBranch: appBranch,
+            appDoctor: appDoctor,
+            appPets: appPets
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.success === 1) 
+            document.getElementById('app-append-result').innerText = `Appointment Successful!`;
+        else
+            document.getElementById('app-append-result').innerText = data.error
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
 }

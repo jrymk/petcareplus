@@ -1,0 +1,28 @@
+<html>
+<head>
+    <title>PetCare+</title>
+    <script src="{{url_for('static', filename='client-mypets.js')}}"></script>
+</head>
+<body>
+    <h1>PetCare+</h1>
+    <h2>My Pets</h2>
+
+    <div id="mypets-table"></div>
+
+    <h2>Append A Pet</h2>
+    <form action="javascript: appendPet();">
+        <label for="pet-name">Name</label><br>
+        <input type="text" id="pet-name" name="pet-name" required><br>
+        <label for="pet-species">Species</label><br>
+        <input type="text" id="pet-species" name="pet-species" required><br>
+        <label for="pet-breed">Breed</label><br>
+        <input type="text" id="pet-breed" name="pet-breed"><br>
+        <label for="pet-bdate">Bdate</label><br>
+        <input type="date" id="pet-bdate" name="pet-bdate"><br>
+        <label for="pet-gender">Gender</label><br>
+        <input type="text" id="pet-gender" name="pet-gender" required><br><br>
+        <input type="submit" value="submit">
+    </form> 
+    <p id="pet-append-result"></p>
+</body>
+</html>

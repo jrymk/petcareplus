@@ -34,14 +34,17 @@ def get_user_appointments():
     
     with get_psql_conn().cursor() as cur:
         cur.execute(f"""
-            SELECT appointment_id, datetime, created_at,
-                S.service_name, B.branch_name, D.name
+            SELECT AP.appointment_id, datetime, created_at,
+                S.service_name, B.branch_name, D.name, COUNT(pet_id)
             FROM APPOINTMENT AS AP
                 JOIN SERVICE AS S ON AP.for_service = S.service_id
                 JOIN BRANCH AS B ON AP.at_branch = B.branch_id
                 JOIN DOCTOR AS D ON AP.chosen_doctor = D.doctor_id
+                JOIN PET_PARTICIPATION AS PP ON AP.appointment_id = PP.appointment_id
             WHERE made_by_user = {session.get("user_id")}
                 AND status = {status}
+            GROUP BY AP.appointment_id, datetime, created_at,
+                S.service_name, B.branch_name, D.name
             ORDER BY datetime DESC, created_at DESC
             LIMIT 10
         """)
@@ -52,8 +55,8 @@ def get_user_appointments():
         
         # convert query result into dataframe and return
         apps_df = pd.DataFrame(results, columns=[
-            "appointment_id", "appointment time", "creation time", "service",
-            "branch", "doctor"
+            "appointment id", "appointment time", "creation time", "service",
+            "branch", "doctor", "num. participating pets"
         ])
         return jsonify({
             'tableHTML': apps_df.to_html(index=False)
@@ -64,9 +67,9 @@ def get_user_appointments():
 def append_appointment():
     # Get data from frontend
     app_datetime = "'" + str(request.json['appDatetime']) + "'"
-    app_service = "'" + request.json['appService'] + "'"
-    app_branch = "'" + request.json['appBranch'] + "'"
-    app_doctor = "'" + request.json['appDoctor'] + "'"
+    app_service = request.json['appService']
+    app_branch = request.json['appBranch']
+    app_doctor = request.json['appDoctor']
     app_pets = request.json['appPets']
     
     with get_psql_conn().cursor() as cur:
@@ -116,6 +119,7 @@ def append_appointment():
             FROM APPOINTMENT AS A
                 JOIN SERVICE AS S ON A.for_service = S.service_id
             WHERE chosen_doctor = {app_doctor}
+                AND at_branch = {app_branch}
                 AND DATE(datetime) = {app_datetime}
                 AND status = 'P'
             FOR SHARE
@@ -152,7 +156,7 @@ def append_appointment():
             for pet_id in app_pets:
                 cur.execute(f"""
                     INSERT INTO PET_PARTICIPATION
-                    VALUES('{pet_id}', {app_id})
+                    VALUES({pet_id}, {app_id})
                 """)
             get_psql_conn().commit()
         except:
@@ -163,7 +167,7 @@ def append_appointment():
 
 @client_appointments.post('/cancel_appointment')
 def cancel_appointment():
-    app_id = "'" + request.json['appId'] + "'"
+    app_id = request.json['appId']
     
     with get_psql_conn().cursor() as cur:
         try:  

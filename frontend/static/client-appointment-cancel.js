@@ -27,6 +27,8 @@ function generateAppIdOptions(){
 }
 
 function cancelAppointment() {
+    document.getElementById('app-cancel-result').innerText = `Processing...`;
+
     const appId = document.getElementById('app-id').value;
     fetch('/cancel_appointment', {
         method: 'POST',

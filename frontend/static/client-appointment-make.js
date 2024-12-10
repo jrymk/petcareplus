@@ -2,12 +2,21 @@ window.addEventListener("DOMContentLoaded", setMinDate);
 window.addEventListener("DOMContentLoaded", generatePetOptions);
 window.addEventListener("DOMContentLoaded", generateBranchOptions);
 
-const appBranchSelect = document.getElementById('app-branch')
+const appDatetimeSelect = document.getElementById('app-datetime');
+appDatetimeSelect?.addEventListener("change", getExistingAppointments);
+
+const appBranchSelect = document.getElementById('app-branch');
 appBranchSelect?.addEventListener("change", generateDoctorOptions);
 appBranchSelect?.addEventListener("change", generateServiceOptions);
+appBranchSelect?.addEventListener("change", getBranchOpeningHours);
+appBranchSelect?.addEventListener("change", getExistingAppointments);
+
+const appDoctorSelect = document.getElementById('app-doctor');
+appDoctorSelect?.addEventListener("change", getDoctorAvailableHours);
+appDoctorSelect?.addEventListener("change", getExistingAppointments);
 
 
-function setMinDate(){
+function setMinDate(){  // set the minimum appointment datetime to be tomorrow 00:00
     var tomorrowDate = new Date();
     const offset = tomorrowDate.getTimezoneOffset();
     tomorrowDate = new Date(tomorrowDate.getTime() - (offset*60*1000) + (24*3600*1000));
@@ -157,6 +166,8 @@ function generateServiceOptions(){
 }
 
 function appendAppointment() {
+    document.getElementById('app-append-result').innerText = `Processing...`;
+
     var appPets = [];
     var selectPets = document.getElementById('app-pet-multipleselect');
     var selectPetsItems = selectPets.getElementsByTagName("input");
@@ -188,6 +199,93 @@ function appendAppointment() {
             document.getElementById('app-append-result').innerText = `Appointment Successful!`;
         else
             document.getElementById('app-append-result').innerText = data.error
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
+}
+
+function getBranchOpeningHours(){
+    var branchOpeningHoursTable = document.getElementById('branch-opening-hours-table');
+    if(!appBranchSelect.value){
+        branchOpeningHoursTable.innerHTML = `<br>`;
+        return;
+    }
+
+    fetch('/get_branch_opening_hours_table', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            branchId: appBranchSelect.value
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        branchOpeningHoursTable.innerHTML = `
+            <label>Opening Hours for ${appBranchSelect.options[appBranchSelect.selectedIndex].text}</label><br>
+            ${data.tableHTML}<br><br>
+        `;
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
+}
+
+function getDoctorAvailableHours(){
+    var doctorAvailableHoursTable = document.getElementById('doctor-available-hours-table');
+    if(!appDoctorSelect.value){
+        doctorAvailableHoursTable.innerHTML = `<br>`;
+        return;
+    }
+
+    fetch('/get_doctor_available_hours_table', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            doctorId: appDoctorSelect.value
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        doctorAvailableHoursTable.innerHTML = `
+            <label>Available Hours for Doctor ${appDoctorSelect.options[appDoctorSelect.selectedIndex].text}</label><br>
+            ${data.tableHTML}<br><br>
+        `;
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
+}
+
+function getExistingAppointments(){
+    var existingAppTable = document.getElementById('existing-app-table');
+    // if either datetime, branch, or doctor is missing, empty the table
+    if((!appDatetimeSelect.value) || (!appBranchSelect.value) || (!appDoctorSelect.value)){
+        existingAppTable.innerHTML = `<br>`;
+        return;
+    }
+
+    fetch('/user_get_existing_appointments_table', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            appDatetime: appDatetimeSelect.value,
+            branchId: appBranchSelect.value,
+            doctorId: appDoctorSelect.value
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        existingAppTable.innerHTML = `
+            <label>Existing Appointments on ${appDatetimeSelect.value.toString().split('T')[0]}</label><br>
+            ${data.tableHTML}<br><br>
+        `;
     })
     .catch((error) => {
         console.error('Error:', error);

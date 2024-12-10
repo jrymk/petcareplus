@@ -1,0 +1,26 @@
+<html>
+<head>
+    <title>PetCare+</title>
+</head>
+<body>
+    <h1><a href='/'>PetCare+</a></h1>
+    <h2>Visit Records</h2>
+
+    <label for="visit-service"><b>Service</b></label><br>
+    <select id="visit-service" name="visit-service" required>
+        <option disabled selected value> -- select service -- </option>
+        <option value="1"> 健康檢查 </option>
+        <option value="2"> 一般門診 </option>
+        <option value="3"> 疫苗接種 </option>
+    </select><br><br>
+
+    <label for="visit-pet"><b>Pet</b></label><br>
+    <select id="visit-pet" name="visit-pet" required>
+        <option disabled selected value> -- select pet -- </option>
+    </select><br><br>
+
+    <div id="visit-record-table"></div>
+
+    <script src="{{url_for('static', filename='client-visitrecords.js')}}"></script>
+</body>
+</html>

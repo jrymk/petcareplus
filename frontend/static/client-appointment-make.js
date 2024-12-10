@@ -36,7 +36,7 @@ function generatePetOptions(){
     .then(data => {
         var pets = data.pets;
         var selectPets = document.getElementById('app-pet-multipleselect');
-        for(var i = 0; i < pets.length; i++) {  // iterates over branches and add options
+        for(var i = 0; i < pets.length; i++) {
             var checkboxLabel = document.createElement("label");
             var checkbox = document.createElement("input");
             checkbox.type = "checkbox";

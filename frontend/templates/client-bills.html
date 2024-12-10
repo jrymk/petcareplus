@@ -1,0 +1,26 @@
+<html>
+<head>
+    <title>PetCare+</title>
+</head>
+<body>
+    <h1><a href='/'>PetCare+</a></h1>
+    <h2>Bills</h2>
+
+    <label for="bill-pstatus"><b>Payment Status</b></label><br>
+    <select id="bill-pstatus" name="bill-pstatus" required>
+        <option disabled selected value> -- select bill status -- </option>
+        <option value="C"> paid </option>
+        <option value="P"> pending </option>
+        <option value="U"> unpaid </option>
+    </select><br><br>
+
+    <label for="bill-id"><b>Bill ID</b></label><br>
+    <select id="bill-id" name="bill-id" required>
+        <option disabled selected value> -- select bill ID -- </option>
+    </select><br><br>
+    
+    <div id="bill-details-table"></div>
+
+    <script src="{{url_for('static', filename='client-bills.js')}}"></script>
+</body>
+</html>

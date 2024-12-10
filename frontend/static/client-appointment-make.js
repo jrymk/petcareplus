@@ -168,13 +168,21 @@ function generateServiceOptions(){
 function appendAppointment() {
     document.getElementById('app-append-result').innerText = `Processing...`;
 
+    var flag = 0;
     var appPets = [];
     var selectPets = document.getElementById('app-pet-multipleselect');
     var selectPetsItems = selectPets.getElementsByTagName("input");
     for(var i = 0; i < selectPetsItems.length; i++)
-        if(selectPetsItems[i].checked)
+        if(selectPetsItems[i].checked){
+            flag = 1;
             appPets.push(selectPetsItems[i].value)  // make a list of pets
-
+        }
+    
+    if(flag === 0){  // no pets are selected
+        document.getElementById('app-append-result').innerText = "At least one pet should be selected."
+        return;
+    }
+    
     const appDatetime = document.getElementById('app-datetime').value;
     const appService = document.getElementById('app-service').value;
     const appBranch = document.getElementById('app-branch').value;

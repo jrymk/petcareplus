@@ -53,7 +53,6 @@ def submit_login():
 @login.post('/submit_register')
 def submit_register():
     # Get data from frontend
-    name = "'" + request.json['name'] + "'"
     username = "'" + request.json['username'] + "'"
     password = "'" + request.json['password'] + "'"
     contact = "'" + request.json['contact'] + "'"

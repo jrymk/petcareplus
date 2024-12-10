@@ -29,7 +29,6 @@ function submitLogin() {
 
 
 function submitRegister() {
-    const name = document.getElementById('r-name').value;
     const username = document.getElementById('r-username').value;
     const password = document.getElementById('r-password').value;
     const contact = document.getElementById('r-contact').value;
@@ -41,7 +40,6 @@ function submitRegister() {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            name: name,
             username: username,
             password: password,
             contact: contact,

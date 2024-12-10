@@ -6,6 +6,11 @@ billIdSelect?.addEventListener("change", getBillDetails);
 
 
 function generateBillIdOptions(){
+    billIdSelect.innerHTML = `
+        <option disabled selected value> -- select bill ID -- </option>
+    `  // empty options
+    document.getElementById("bill-details-table").innerHTML = ``  // empty table
+
     fetch('/get_bill_with_status', {
         method: 'POST',
         headers: {

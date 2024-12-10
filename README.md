@@ -1,11 +1,13 @@
 # PetCare+
+Try the demo out at [https://petcareplus.jerrymk.uk](https://petcareplus.jerrymk.uk)!
+
 PetCare+ is a management platform for animal hospitals. It allows users to make an appointment online, check medical records, etc., and the doctor can check the schedule and fill in check in results, diagnoses, etc.
 
 This is a demonstration program and is not production-ready.
 
-You may try it out at [https://petcareplus.jerrymk.uk](https://petcareplus.jerrymk.uk).
-
 For deployment guide, go to [Deploying](#deploying)
+
+---
 
 ### Doctor Schedule Page
 ![image](https://github.com/user-attachments/assets/59d41850-b588-4045-a051-79af288459c0)

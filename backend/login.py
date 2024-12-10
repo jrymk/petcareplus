@@ -66,7 +66,6 @@ def submit_register():
             SELECT *
             FROM "USER"
             WHERE username = {username}
-            FOR SHARE
         """)  # not commit: protect from unrepeatable read
         results = cur.fetchall()
         if len(results):  # duplicate username

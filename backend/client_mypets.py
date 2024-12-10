@@ -54,7 +54,7 @@ def append_pet():
             SELECT *
             FROM PET
             WHERE owned_by = {session.get("user_id")}
-            FOR SHARE
+            FOR UPDATE
         """)  # no commit: protect from unrepeatable read
         results = cur.fetchall()
         if len(results) >= 5:  # check num. of pets

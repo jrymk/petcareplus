@@ -122,7 +122,7 @@ def append_appointment():
                 AND at_branch = {app_branch}
                 AND DATE(datetime) = {app_datetime}
                 AND status = 'P'
-            FOR SHARE
+            FOR UPDATE
         """)  # no commit: concurrency control
         flag = True
         for other_dttime, other_duration in cur.fetchall():

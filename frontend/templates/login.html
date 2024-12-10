@@ -1,7 +1,6 @@
 <html>
 <head>
     <title>PetCare+</title>
-    <script src="{{url_for('static', filename='login.js')}}"></script>
 </head>
 <body>
     <h1>PetCare+</h1>
@@ -16,5 +15,25 @@
     </form> 
 
     <p id="login-result"></p>
+
+    <br>
+    <h2>Register</h2>
+    <form action="javascript: submitRegister();">
+        <label for="r-name">Name</label><br>
+        <input type="text" id="r-name" name="r-name" required><br>
+        <label for="r-username">Username</label><br>
+        <input type="text" id="r-username" name="r-username" required><br>
+        <label for="r-password">Password</label><br>
+        <input type="password" id="r-password" name="r-password" required><br>
+        <label for="r-contact">Contact</label><br>
+        <input type="text" id="r-contact" name="r-contact"><br>
+        <label for="r-email">Email</label><br>
+        <input type="text" id="r-email" name="r-email"><br><br>
+        <input type="submit" value="submit">
+    </form> 
+
+    <p id="register-result"></p>
+    
+    <script src="{{url_for('static', filename='login.js')}}"></script>
 </body>
 </html>

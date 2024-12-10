@@ -9,11 +9,11 @@
     <ul>
         <li><a href='/client-mypets'>My Pets</a></li>
         <li><a href='/client-appointments'>Appointments</a></li>
-        <li><a href='/client-health-check'>Health Check Records</a></li>
-        <li><a href='/client-diagnosis'>Dignosis Records</a></li>
-        <li><a href='/client-prescription'>Prescription Records</a></li>
-        <li><a href='/client-vaccination'>Vaccination Records</a></li>
+        <li><a href='/client-records'>Visit Records</a></li> <!-- health check, diagnosis, prescription, vaccination-->
         <li><a href='/client-bills'>Bills</a></li>
     </ul>
+    
+    <button onclick="logout();">logout</button>
+    <script src="{{url_for('static', filename='logout.js')}}"></script>
 </body>
 </html>

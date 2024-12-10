@@ -48,3 +48,49 @@ def submit_login():
         
         # Return success json
         return jsonify({'success': 1})
+
+
+@login.post('/submit_register')
+def submit_register():
+    # Get data from frontend
+    name = "'" + request.json['name'] + "'"
+    username = "'" + request.json['username'] + "'"
+    password = "'" + request.json['password'] + "'"
+    contact = "'" + request.json['contact'] + "'"
+    if contact == "''": contact = "NULL"  # the user left this blank
+    email = "'" + request.json['email'] + "'"
+    if email == "''": email = "NULL"
+    
+    # Search for user
+    with get_psql_conn().cursor() as cur:
+        cur.execute(f"""
+            SELECT *
+            FROM "USER"
+            WHERE username = {username}
+            FOR SHARE
+        """)  # not commit: protect from unrepeatable read
+        results = cur.fetchall()
+        if len(results):  # duplicate username
+            get_psql_conn().rollback()
+            return jsonify({'success': 0, 'error': 'Duplicate username.'})
+        
+        # start registering
+        try:
+            cur.execute(f"""
+                INSERT INTO "USER"(username, email, password, contact)
+                VALUES({username}, {email}, {password}, {contact})
+            """)
+            get_psql_conn().commit()
+        except:
+            get_psql_conn().rollback()
+            return jsonify({'success': 0, 'error': 'Failed to insert record.'})
+        return jsonify({'success': 1})
+
+
+@login.post('/logout')
+def logout():
+    session["login"] = False
+    session["user_id"] = None
+    session["username"] = None
+    session["role"] = None
+    return jsonify({'success': 1})

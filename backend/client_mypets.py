@@ -54,17 +54,22 @@ def append_pet():
             SELECT *
             FROM PET
             WHERE owned_by = {session.get("user_id")}
-        """)
-        get_psql_conn().commit()
+            FOR SHARE
+        """)  # no commit: protect from unrepeatable read
         results = cur.fetchall()
         if len(results) >= 5:  # check num. of pets
+            get_psql_conn().rollback()
             return jsonify({'success': 0, 'error': 'A user can only register 5 pets.'})
         
         # Insert the pet data
-        cur.execute(f"""
-            INSERT INTO PET(name, species, breed, bdate, gender, owned_by)
-            VALUES({pet_name}, {pet_species}, {pet_breed},
-                   {pet_bdate}, {pet_gender}, {session.get("user_id")})
-        """)
-        get_psql_conn().commit()
+        try:
+            cur.execute(f"""
+                INSERT INTO PET(name, species, breed, bdate, gender, owned_by)
+                VALUES({pet_name}, {pet_species}, {pet_breed},
+                       {pet_bdate}, {pet_gender}, {session.get("user_id")})
+            """)
+            get_psql_conn().commit()
+        except:
+            get_psql_conn().rollback()
+            return jsonify({'success': 0, 'error': 'Failed to insert record.'})
         return jsonify({'success': 1})

@@ -1,10 +1,29 @@
+window.addEventListener("DOMContentLoaded", setMinDate);
 window.addEventListener("DOMContentLoaded", generatePetOptions);
 window.addEventListener("DOMContentLoaded", generateBranchOptions);
 
-const appBranchSelect = document.getElementById('app-branch')
+const appDatetimeSelect = document.getElementById('app-datetime');
+appDatetimeSelect?.addEventListener("change", getExistingAppointments);
+
+const appBranchSelect = document.getElementById('app-branch');
 appBranchSelect?.addEventListener("change", generateDoctorOptions);
 appBranchSelect?.addEventListener("change", generateServiceOptions);
+appBranchSelect?.addEventListener("change", getBranchOpeningHours);
+appBranchSelect?.addEventListener("change", getExistingAppointments);
 
+const appDoctorSelect = document.getElementById('app-doctor');
+appDoctorSelect?.addEventListener("change", getDoctorAvailableHours);
+appDoctorSelect?.addEventListener("change", getExistingAppointments);
+
+
+function setMinDate(){  // set the minimum appointment datetime to be tomorrow 00:00
+    var tomorrowDate = new Date();
+    const offset = tomorrowDate.getTimezoneOffset();
+    tomorrowDate = new Date(tomorrowDate.getTime() - (offset*60*1000) + (24*3600*1000));
+
+    const appDateSelect = document.getElementById('app-datetime');
+    appDateSelect.min = tomorrowDate.toISOString().split('T')[0] + "T00:00";
+}
 
 function generatePetOptions(){
     fetch('/get_user_pets', {
@@ -17,7 +36,7 @@ function generatePetOptions(){
     .then(data => {
         var pets = data.pets;
         var selectPets = document.getElementById('app-pet-multipleselect');
-        for(var i = 0; i < pets.length; i++) {  // iterates over branches and add options
+        for(var i = 0; i < pets.length; i++) {
             var checkboxLabel = document.createElement("label");
             var checkbox = document.createElement("input");
             checkbox.type = "checkbox";
@@ -144,4 +163,131 @@ function generateServiceOptions(){
     });
 
     document.getElementById("app-submit").disabled = false;  // re-activate submit button
+}
+
+function appendAppointment() {
+    document.getElementById('app-append-result').innerText = `Processing...`;
+
+    var appPets = [];
+    var selectPets = document.getElementById('app-pet-multipleselect');
+    var selectPetsItems = selectPets.getElementsByTagName("input");
+    for(var i = 0; i < selectPetsItems.length; i++)
+        if(selectPetsItems[i].checked)
+            appPets.push(selectPetsItems[i].value)  // make a list of pets
+
+    const appDatetime = document.getElementById('app-datetime').value;
+    const appService = document.getElementById('app-service').value;
+    const appBranch = document.getElementById('app-branch').value;
+    const appDoctor = document.getElementById('app-doctor').value;
+
+    fetch('/append_appointment', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            appDatetime: appDatetime,
+            appService: appService,
+            appBranch: appBranch,
+            appDoctor: appDoctor,
+            appPets: appPets
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.success === 1) 
+            document.getElementById('app-append-result').innerText = `Appointment Successful!`;
+        else
+            document.getElementById('app-append-result').innerText = data.error
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
+}
+
+function getBranchOpeningHours(){
+    var branchOpeningHoursTable = document.getElementById('branch-opening-hours-table');
+    if(!appBranchSelect.value){
+        branchOpeningHoursTable.innerHTML = `<br>`;
+        return;
+    }
+
+    fetch('/get_branch_opening_hours_table', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            branchId: appBranchSelect.value
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        branchOpeningHoursTable.innerHTML = `
+            <label>Opening Hours for ${appBranchSelect.options[appBranchSelect.selectedIndex].text}</label><br>
+            ${data.tableHTML}<br><br>
+        `;
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
+}
+
+function getDoctorAvailableHours(){
+    var doctorAvailableHoursTable = document.getElementById('doctor-available-hours-table');
+    if(!appDoctorSelect.value){
+        doctorAvailableHoursTable.innerHTML = `<br>`;
+        return;
+    }
+
+    fetch('/get_doctor_available_hours_table', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            doctorId: appDoctorSelect.value
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        doctorAvailableHoursTable.innerHTML = `
+            <label>Available Hours for Doctor ${appDoctorSelect.options[appDoctorSelect.selectedIndex].text}</label><br>
+            ${data.tableHTML}<br><br>
+        `;
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
+}
+
+function getExistingAppointments(){
+    var existingAppTable = document.getElementById('existing-app-table');
+    // if either datetime, branch, or doctor is missing, empty the table
+    if((!appDatetimeSelect.value) || (!appBranchSelect.value) || (!appDoctorSelect.value)){
+        existingAppTable.innerHTML = `<br>`;
+        return;
+    }
+
+    fetch('/user_get_existing_appointments_table', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            appDatetime: appDatetimeSelect.value,
+            branchId: appBranchSelect.value,
+            doctorId: appDoctorSelect.value
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        existingAppTable.innerHTML = `
+            <label>Existing Appointments on ${appDatetimeSelect.value.toString().split('T')[0]}</label><br>
+            ${data.tableHTML}<br><br>
+        `;
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
 }

@@ -1,0 +1,20 @@
+<html>
+<head>
+    <title>PetCare+</title>
+</head>
+<body>
+    <h1><a href='/'>PetCare+</a></h1>
+    <h2>Cancel An Appointment</h2>
+    <form action="javascript: cancelAppointment();">
+        <label for="app-id">Appointment ID</label><br>
+        <select id="app-id" name="app-id" required>
+            <option disabled selected value> -- select appointment ID -- </option>
+        </select><br><br>
+    
+        <input id="app-submit" type="submit" value="submit">
+    </form> 
+    <p id="app-cancel-result"></p>
+    
+    <script src="{{url_for('static', filename='client-appointment-cancel.js')}}"></script>
+</body>
+</html>

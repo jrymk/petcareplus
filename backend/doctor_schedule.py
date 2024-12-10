@@ -69,7 +69,7 @@ def get_doctor_schedule():
                         tableHTML += f"<br>{appointment[2]}<br>{appointment[3] if appointment[3] is not None else 'Contact N/A'}<br>" # username, contact
                         tableHTML += f"<span title={appointment[7]}>{appointment[6]}</span> <span style='color: #888888'>{
                             (str(appointment[8] // 60) + "小時") if (appointment[8] // 60) != 0 else ""
-                            + (str(appointment[8] % 60) + "分鐘") if (appointment[8] % 60) != 0 else ""}</span>"
+                            + (str(appointment[8] % 60) + "分鐘") if (appointment[8] % 60) != 0 else ""}</span>"""
                         tableHTML += f"<br><a href='/doctor-appointment?appointment_id={appointment[0]}'>Enter</a></td>"
                     else:
                         tableHTML += "<td style='border-width: 1px'></td>"

@@ -54,10 +54,11 @@ def append_pet():
             SELECT *
             FROM PET
             WHERE owned_by = {session.get("user_id")}
-        """)
-        get_psql_conn().commit()
+            FOR SHARE
+        """)  # no commit: protect from unrepeatable read
         results = cur.fetchall()
         if len(results) >= 5:  # check num. of pets
+            get_psql_conn().rollback()
             return jsonify({'success': 0, 'error': 'A user can only register 5 pets.'})
         
         # Insert the pet data

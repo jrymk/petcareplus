@@ -89,8 +89,9 @@
 
             <form action="javascript: addVaccine();" style="padding: 4pt; background-color: #EEEEEE;">
                 <label for="vaccine-name">Vaccine: </label>
-                <input type="text" id="vaccine-name" name="vaccine-name"><br>
-                <input id="add-vaccine" style="margin-top: 8pt;" type="submit" value="Add">
+                <input type="text" id="vaccine-name" name="vaccine-name" onfocus="showVaccineCandidates();" oninput="showVaccineCandidates();" onblur="hideVaccineCandidates();" style="width: 120pt"><br>
+                <div id="vaccine-candidates"></div>
+                <input id="add-vaccine" style="margin-top: 8pt;" type="submit" value="Add" disabled>
             </form>
             
         </div>

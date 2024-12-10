@@ -3,6 +3,7 @@ let readOnlyDesc = "";
 let appointmentId = 0;
 let petIndex = 0;
 let pets = [];
+let vaccines = [];
 
 window.addEventListener("DOMContentLoaded", () => {
 
@@ -107,7 +108,26 @@ window.addEventListener("DOMContentLoaded", () => {
                 thisAppointment.innerHTML = `<p style="color: red">Failed to load appointment details.<br>Error: ${error}</p>`;
             });
         
-        }
+    }
+    
+    // load vaccines
+    fetch('/get_vaccine_names')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Response not OK');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                vaccines = data.vaccines;
+            } else {
+                throw new Error(data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching vaccines: ', error);
+        });
 });
 
 
@@ -677,4 +697,34 @@ function cancelAppointment() {
         console.error('Error cancelling appointment: ', error);
         alert('Failed to cancel appointment.\nError: ' + error);
     });
+}
+
+function showVaccineCandidates() {
+    let filter = document.getElementById('vaccine-name').value;
+    let vaccineCandidatesDiv = document.getElementById('vaccine-candidates');
+    let vaccineCandidatesHtml = '';
+
+    vaccineCandidatesDiv.style.display = 'block';
+
+    document.getElementById('add-vaccine').disabled = !vaccines.includes(document.getElementById('vaccine-name').value);
+
+    // let filteredVaccines = vaccines.filter(vaccine => vaccine.includes(filter));
+    let regex = new RegExp(filter.split('').join('.*'), 'i');
+    let filteredVaccines = vaccines.filter(vaccine => regex.test(vaccine));
+    if (filteredVaccines.length > 0) {
+        vaccineCandidatesHtml = '<ul>';
+        filteredVaccines.forEach(vaccine => {
+            vaccineCandidatesHtml += `<span onclick="document.getElementById('vaccine-name').value='${vaccine}'; hideVaccineCandidates();">${vaccine}</span><br>`;
+        });
+    } else {
+        vaccineCandidatesHtml = '<p>No matching vaccines found.</p>';
+    }
+    vaccineCandidatesDiv.innerHTML = vaccineCandidatesHtml;
+}
+
+function hideVaccineCandidates() {
+    if (vaccines.includes(document.getElementById('vaccine-name').value)) {
+        document.getElementById('vaccine-candidates').style.display = 'none';
+        document.getElementById('add-vaccine').disabled = false;
+    }
 }

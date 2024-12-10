@@ -4,12 +4,14 @@ window.addEventListener("DOMContentLoaded", () => {
     document.getElementById('prev-week').addEventListener('click', (event) => {
         event.preventDefault();
         currentWeekOffset -= 1;
+        updateWeekLable(currentWeekOffset);
         getDoctorSchedule(currentWeekOffset);
     });
 
     document.getElementById('next-week').addEventListener('click', (event) => {
         event.preventDefault();
         currentWeekOffset += 1;
+        updateWeekLable(currentWeekOffset);
         getDoctorSchedule(currentWeekOffset);
     });
 
@@ -31,4 +33,13 @@ function getDoctorSchedule(weekOffset) {
     .catch((error) => {
         console.error('Error:', error);
     });
+}
+
+function updateWeekLable(offset) {
+    document.getElementById('week-label').innerHTML = 
+        offset == -1 ? `${-offset} week ago`
+            : offset < -1 ? `${-offset} weeks ago`
+                : offset == 0 ? 'This week'
+                    : offset == 1 ? `${offset} week ahead`
+                        : `${offset} weeks ahead`;
 }

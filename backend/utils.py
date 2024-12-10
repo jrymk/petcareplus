@@ -181,3 +181,20 @@ def user_get_existing_appointments_table():
         return jsonify({
             'tableHTML': eapp_df.to_html(index=False)
         })
+    
+@utils.get('/get_vaccine_names')
+def get_vaccine_names():
+    with get_psql_conn().cursor() as cur:
+        cur.execute(f"""
+            SELECT vaccine_name
+            FROM VACCINE
+        """)
+        get_psql_conn().commit()
+        results = cur.fetchall()
+
+        vaccines = [v[0] for v in results]
+        
+        return jsonify({
+            'success': 1,
+            'vaccines': vaccines
+        })

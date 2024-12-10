@@ -42,4 +42,4 @@ def serve_homepage():
 
 if __name__ == '__main__':
     init_app()
-    app.run()
+    app.run(debug=True)

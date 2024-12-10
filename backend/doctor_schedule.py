@@ -26,11 +26,9 @@ def get_doctor_schedule():
     try:
         with get_psql_conn().cursor() as cur:
             cur.execute(f"""
-                SELECT a.appointment_id, a.datetime, u.username, u.contact, p.name, a.status, s.service_name, s.description, s.duration, b.branch_name
+                SELECT a.appointment_id, a.datetime, u.username, u.contact, u.user_id, a.status, s.service_name, s.description, s.duration, b.branch_name
                 FROM APPOINTMENT as a
                 JOIN "USER" as u ON a.made_by_user = u.user_id
-                JOIN PET_PARTICIPATION as pp ON pp.appointment_id = a.appointment_id
-                JOIN PET as p ON pp.pet_id = p.pet_id
                 JOIN SERVICE as s ON a.for_service = s.service_id
                 JOIN BRANCH as b ON a.at_branch = b.branch_id
                 WHERE a.chosen_doctor = {session.get("user_id")}
@@ -68,7 +66,7 @@ def get_doctor_schedule():
                         tableHTML += f"<td style='border-width: 1px; background-color: {'#DDDDDD' if appointment[5] == 'O' else '#FFDDDD' if appointment[5] == 'C' else '#DDFFDD'}'>"
                         tableHTML += f"<span style='font-weight: 900; font-size: 1.2em;'>{appointment[1].strftime('%H:%M')}</span>"
                         tableHTML += f"<span style='font-size: 0.8em; float: right'>{appointment[9]}</span>" # branch name
-                        tableHTML += f"<br>{appointment[2]}<br>{appointment[3] if appointment[3] is not None else 'Contact N/A'}<br>{appointment[4]}<br>" # username, contact, pet name
+                        tableHTML += f"<br>{appointment[2]}<br>{appointment[3] if appointment[3] is not None else 'Contact N/A'}<br>" # username, contact
                         tableHTML += f"<span title={appointment[7]}>{appointment[6]}</span> <span style='color: #888888'>{
                             (str(appointment[8] // 60) + "小時") if (appointment[8] // 60) != 0 else ""
                             + (str(appointment[8] % 60) + "分鐘") if (appointment[8] % 60) != 0 else ""}</span>"

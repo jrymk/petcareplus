@@ -23,8 +23,14 @@
     </style>
 </head>
 <body>
-    <h1>PetCare+</h1>
+    <h1 onclick="window.location.href='/'" style="cursor: pointer;">PetCare+</h1>
     <h2>Welcome, Doctor {{username}}!</h2>
+
+    <div id="appointment-status" style="background-color: #AAFFAA; padding: 4pt; border-radius: 8pt; display: inline-block">
+        <span id="appointment-status-text" style="font-size: x-large; font-weight: 800;">Loading</span>
+        <button id="complete-and-archive-button" style="display: none; margin-left: 8pt;" onclick="completeAndArchive();">Complete and Archive</button>
+        <button id="cancel-button" style="display: none; margin-left: 4pt;" onclick="cancelAppointment();">Cancel Appointment</button>
+    </div>
 
     <div id="this-appointment">
         <div id="appointment-details" data-appointment-id="{{ appointment_id }}" data-pet-id="{{ pet_id }}"></div>
@@ -43,7 +49,7 @@
                 <input type="number" id="pulse-rate" name="pulse-rate" style="width: 50pt;"><br>
                 <label for="notes">Notes: </label>
                 <br><textarea id="notes" name="notes" style="width: 100%; height: 5em;"></textarea><br>
-                <input style="margin-top: 8pt;" type="submit" value="Save">
+                <input id="save-health-check" style="margin-top: 8pt;" type="submit" value="Save">
             </form>
         </div>
 
@@ -58,25 +64,41 @@
                 <br><textarea id="treatment-plan" name="treatment-plan" style="width: 100%; height: 5em;"></textarea><br>
                 <label for="follow-up">Follow Up: </label>
                 <br><input type="text" id="follow-up" name="follow-up" style="width: 100%;"><br>
-                <input style="margin-top: 8pt;" type="submit" value="Save">
+                <input id="save-diagnosis" style="margin-top: 8pt;" type="submit" value="Save">
             </form>
         </div>
 
         <div class="blocks" style="min-width: 0pt;">
-            <form action="javascript: saveVaccination();">
-                <h3>Vaccination</h3>
+            <h3>Vaccination</h3>
+            
+            <div id="vaccine-list">
+                <table>
+                    <tr>
+                        <th>Vaccine</th>
+                        <th>Span</th>
+                        <th>Due Date</th>
+                        <th>Manage</th>
+                    </tr>
+                    <tr>
+                        <td colspan="4" style="text-align: center; font-style: italic;">No vaccines</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <br>
+
+            <form action="javascript: addVaccine();" style="padding: 4pt; background-color: #EEEEEE;">
                 <label for="vaccine-name">Vaccine: </label>
                 <input type="text" id="vaccine-name" name="vaccine-name"><br>
-                <label for="vaccine-date">Date: </label>
-                <input type="date" id="vaccine-date" name="vaccine-date"><br>
-                <input style="margin-top: 8pt;" type="submit" value="Save">
+                <input id="add-vaccine" style="margin-top: 8pt;" type="submit" value="Add">
             </form>
+            
         </div>
 
         <div class="blocks">
             <h3>Prescription</h3>
 
-            <div class="prescription-list">
+            <div id="prescription-list">
                 <table>
                     <tr>
                         <th>Medication</th>
@@ -94,18 +116,18 @@
             
             <br>
             
-            <form action="javascript: savePrescription();">
-                <label for="medication-name">Medication: </label>
-                <input type="text" id="medication-name" name="medication-name" style="width: 240pt"><br>
-                <label for="medication-dosage">Dosage: </label>
-                <input type="text" id="medication-dosage" name="medication-dosage" style="width: 80pt;">
-                <label for="medication-frequency">Frequency: </label>
-                <input type="text" id="medication-frequency" name="medication-frequency" style="width: 80pt;">
-                <label for="medication-duration">Duration: </label>
-                <input type="text" id="medication-duration" name="medication-duration" style="width: 80pt;"><br>
-                <label for="medication-notes">Notes: </label>
-                <br><textarea id="medication-notes" name="medication-notes" style="width: 100%; height: 5em;"></textarea><br>
-                <input style="margin-top: 8pt;" type="submit" value="Add">
+            <form action="javascript: addPrescription();" style="padding: 4pt; background-color: #EEEEEE;">
+                <label for="prescription-name">Medication: </label>
+                <input type="text" id="prescription-name" name="prescription-name" style="width: 240pt"><br>
+                <label for="prescription-dosage">Dosage: </label>
+                <input type="text" id="prescription-dosage" name="prescription-dosage" style="width: 80pt;">
+                <label for="prescription-frequency">Frequency: </label>
+                <input type="text" id="prescription-frequency" name="prescription-frequency" style="width: 80pt;">
+                <label for="prescription-duration">Duration: </label>
+                <input type="text" id="prescription-duration" name="prescription-duration" style="width: 80pt;"><br>
+                <label for="prescription-notes">Notes: </label>
+                <br><textarea id="prescription-notes" name="prescription-notes" style="width: 100%; height: 5em;"></textarea><br>
+                <input id="add-prescription" style="margin-top: 8pt;" type="submit" value="Add">
             </form>
         </div>
     </div>

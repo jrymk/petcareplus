@@ -19,12 +19,14 @@ def serve_doctor_appointment():
                            pet_id=pet_id,
                            username=session.get("username"))
 
+
 @doctor_appointment.get('/get_appointment_details')
 def get_appointment_details():
     if not session.get("login") or session.get("role") != "doctor":
         return jsonify({'success': 0, 'error': 'Unauthorized access.'})
 
     appointment_id = request.args.get('appointment_id')
+    appointment_details = dict()
 
     try:
         with get_psql_conn().cursor() as cur:
@@ -40,7 +42,7 @@ def get_appointment_details():
             #     return jsonify({'success': 0, 'error': 'Unauthorized access. You are not the chosen doctor for this appointment.'})
 
             cur.execute(f"""
-                SELECT u.username, u.contact, s.service_name, s.description, s.duration, p.pet_id, p.name, p.species, p.breed, p.bdate, p.gender
+                SELECT a.status, a.chosen_doctor, u.username, u.contact, s.service_name, s.description, s.duration, p.pet_id, p.name, p.species, p.breed, p.bdate, p.gender
                 FROM APPOINTMENT as a
                 JOIN "USER" as u ON a.made_by_user = u.user_id
                 JOIN SERVICE as s ON a.for_service = s.service_id
@@ -53,32 +55,39 @@ def get_appointment_details():
             if len(results) == 0:
                 return jsonify({'success': 0, 'error': 'No pets registered for this appointment.'})
             
+            is_chosen_doctor = False
+            if session.get("login"):
+                if session.get("user_id") == results[0][1]:
+                    is_chosen_doctor = True
+
             # convert query result into {username, contact, ..., pet: {pet_id, name, species, ...}}
             appointment_details = {
-                'username': results[0][0],
-                'contact': results[0][1],
-                'service_name': results[0][2],
-                'service_description': results[0][3],
-                'service_duration': results[0][4],
+                'status': results[0][0] + ('!' if is_chosen_doctor else ''),
+                'chosen_doctor': results[0][1],
+                'username': results[0][2],
+                'contact': results[0][3],
+                'service_name': results[0][4],
+                'service_description': results[0][5],
+                'service_duration': results[0][6],
                 'pets': []
             }
             for row in results:
                 appointment_details['pets'].append({
-                    'pet_id': row[5],
-                    'name': row[6],
-                    'species': row[7],
-                    'breed': row[8],
-                    'bdate': row[9],
-                    'age': (datetime.datetime.now().date() - row[9]).days,
-                    'gender': row[10]
+                    'pet_id': row[7],
+                    'name': row[8],
+                    'species': row[9],
+                    'breed': row[10],
+                    'bdate': row[11],
+                    'age': (datetime.datetime.now().date() - row[11]).days,
+                    'gender': row[12]
                 })
-            return jsonify({'success': 1, 'appointment': appointment_details})
     except Exception as e:
         get_psql_conn().rollback()
         print(str(e))
         return jsonify({'success': 0, 'error': str(e)})
     finally:
         get_psql_conn().commit()
+        return jsonify({'success': 1, 'appointment': appointment_details})
 
 
 @doctor_appointment.get('/get_pet_appointments')
@@ -125,8 +134,6 @@ def get_pet_appointments():
                 else:
                     new_results[row[0]]['vaccine_name'].append(row[10])
             results = sorted(new_results.values(), key=lambda x: x['datetime'], reverse=True)
-
-            return jsonify({'success': 1, 'appointments': results})
     
     except Exception as e:
         get_psql_conn().rollback()
@@ -134,3 +141,66 @@ def get_pet_appointments():
         return jsonify({'success': 0, 'error': str(e)})
     finally:
         get_psql_conn().commit()
+        return jsonify({'success': 1, 'appointments': results})
+    
+@doctor_appointment.post('/archive')
+def archive_appointment():
+    if not session.get("login") or session.get("role") != "doctor":
+        return jsonify({'success': 0, 'error': 'Unauthorized access.'})
+
+    appointment_id = request.json['appointment_id']
+    try:
+        with get_psql_conn().cursor() as cur:
+            cur.execute(f"""
+                SELECT chosen_doctor FROM APPOINTMENT
+                WHERE appointment_id = {appointment_id}
+            """)
+            results = cur.fetchall()
+            if len(results) == 0:
+                return jsonify({'success': 0, 'error': 'Appointment not found.'})
+            elif results[0][0] != session.get("user_id"):
+                return jsonify({'success': 0, 'error': 'Unauthorized access. You are not the chosen doctor for this appointment.'})
+
+            cur.execute(f"""
+                UPDATE APPOINTMENT
+                SET status = 'O'
+                WHERE appointment_id = {appointment_id}
+            """)
+    except Exception as e:
+        get_psql_conn().rollback()
+        print(str(e))
+        return jsonify({'success': 0, 'error': str(e)})
+    finally:
+        get_psql_conn().commit()
+        return jsonify({'success': 1})
+    
+@doctor_appointment.post('/cancel')
+def cancel_appointment():
+    if not session.get("login") or session.get("role") != "doctor":
+        return jsonify({'success': 0, 'error': 'Unauthorized access.'})
+
+    appointment_id = request.json['appointment_id']
+    try:
+        with get_psql_conn().cursor() as cur:
+            cur.execute(f"""
+                SELECT chosen_doctor FROM APPOINTMENT
+                WHERE appointment_id = {appointment_id}
+            """)
+            results = cur.fetchall()
+            if len(results) == 0:
+                return jsonify({'success': 0, 'error': 'Appointment not found.'})
+            elif results[0][0] != session.get("user_id"):
+                return jsonify({'success': 0, 'error': 'Unauthorized access. You are not the chosen doctor for this appointment.'})
+
+            cur.execute(f"""
+                UPDATE APPOINTMENT
+                SET status = 'C'
+                WHERE appointment_id = {appointment_id}
+            """)
+    except Exception as e:
+        get_psql_conn().rollback()
+        print(str(e))
+        return jsonify({'success': 0, 'error': str(e)})
+    finally:
+        get_psql_conn().commit()
+        return jsonify({'success': 1})

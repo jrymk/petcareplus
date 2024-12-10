@@ -9,6 +9,7 @@ from client_visitrecords import client_visitrecords
 from client_bills import client_bills
 from doctor_schedule import doctor_schedule
 from doctor_appointment import doctor_appointment
+from doctor_records import doctor_records
 from utils import utils
 
 
@@ -21,6 +22,7 @@ app.register_blueprint(client_visitrecords)
 app.register_blueprint(client_bills)
 app.register_blueprint(doctor_schedule)
 app.register_blueprint(doctor_appointment)
+app.register_blueprint(doctor_records)
 app.register_blueprint(utils)
 
 

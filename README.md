@@ -51,12 +51,17 @@ For deployment guide, go to [Deploying](#deploying)
 
 ## Deploying
 
+Install the required packages using the following command:
+```
+pip install -r requirements.txt
+```
+
 Deploying yourself require an environment variable file located at the `backend` folder. 
 
 It should look something like this:
 ```
 POSTGRES_HOST=jerrymk.uk
-POSTGRES_PORT=5558
+POSTGRES_PORT=5432
 POSTGRES_DB=petcareplus
 POSTGRES_USER="obfuscated"
 POSTGRES_PASSWORD="obfuscated"

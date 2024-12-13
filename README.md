@@ -68,3 +68,9 @@ POSTGRES_PASSWORD="obfuscated"
 ```
 
 You may use the `.sql` and backup files located in the `database` folder to set up your own database server.
+
+Finally, run the application in the backend folder:
+```bash
+cd backend
+python ./app.py
+```

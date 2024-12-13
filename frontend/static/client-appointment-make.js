@@ -291,8 +291,8 @@ function getExistingAppointments(){
     .then(response => response.json())
     .then(data => {
         existingAppTable.innerHTML = `
-            <label>Existing Appointments on ${appDatetimeSelect.value.toString().split('T')[0]}</label><br>
-            ${data.tableHTML}<br><br>
+            <label>Existing Appointments on ${appDatetimeSelect.value.toString().split('T')[0]}:</label><br>
+            ${data.tableHTML}
         `;
     })
     .catch((error) => {

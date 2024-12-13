@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request, session, render_template, url_for
+from flask import Blueprint, jsonify, request, session, render_template, url_for, current_app
 from db import get_psql_conn
 
 
@@ -12,6 +12,7 @@ def serve_login_page():
 
 @login.post('/submit_login')
 def submit_login():
+    print(request.json)
     # Get data from frontend
     username = request.json['username']
     password = request.json['password']
@@ -93,3 +94,50 @@ def logout():
     session["username"] = None
     session["role"] = None
     return jsonify({'success': 1})
+
+
+@login.post('/random_user_login')
+def random_user_login():
+    with get_psql_conn().cursor() as cur:
+        cur.execute(f"""
+            SELECT user_id, username
+            FROM "USER"
+            WHERE user_id NOT IN (SELECT doctor_id FROM DOCTOR)
+            ORDER BY random()
+            LIMIT 1
+        """)
+        get_psql_conn().commit()
+        results = cur.fetchall()
+        if len(results) == 0:
+            return jsonify({'success': 0, 'error': 'No user found.'})
+        
+        session["login"] = True
+        session["user_id"] = results[0][0]
+        session["username"] = results[0][1]
+        session["role"] = "client"
+        return jsonify({'success': 1})
+    
+    return jsonify({'success': 0, 'error': 'Failed to login.'})
+
+@login.post('/random_doctor_login')
+def random_doctor_login():
+    with get_psql_conn().cursor() as cur:
+        cur.execute(f"""
+            SELECT user_id, username
+            FROM "USER" as u
+            WHERE user_id IN (SELECT doctor_id FROM DOCTOR)
+            ORDER BY random()
+            LIMIT 1
+        """)
+        get_psql_conn().commit()
+        results = cur.fetchall()
+        if len(results) == 0:
+            return jsonify({'success': 0, 'error': 'No doctor found.'})
+        
+        session["login"] = True
+        session["user_id"] = results[0][0]
+        session["username"] = results[0][1]
+        session["role"] = "doctor"
+        return jsonify({'success': 1})
+    
+    return jsonify({'success': 0, 'error': 'Failed to login.'})

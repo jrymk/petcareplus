@@ -12,7 +12,7 @@ def serve_doctor_home():
     if not session.get("login"):
         return redirect("/login")
     
-    return render_template("doctor-home.html")
+    return render_template("doctor-home.html", username=session.get("username"))
 
 
 @doctor_schedule.post('/get_doctor_schedule')
@@ -74,6 +74,9 @@ def get_doctor_schedule():
                     else:
                         tableHTML += "<td style='border-width: 1px'></td>"
                 tableHTML += "</tr>"
+
+            if max_appointments == 0:
+                tableHTML += "<tr><td colspan='7' style='border-width: 1px'>No appointments this week</td></tr>"
 
             tableHTML += "</tbody></table>"
 

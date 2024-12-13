@@ -59,3 +59,55 @@ function submitRegister() {
         console.error('Error:', error);
     });
 }
+
+function randomUserLogin() {
+    fetch('/random_user_login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.success === 1) {
+            document.getElementById('login-result').innerText = `Login Successful!`;
+            window.location.href = "/";
+        }
+        else {
+            document.getElementById('login-result').innerText = data.error
+        }
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
+}
+
+function randomDoctorLogin() {
+    fetch('/random_doctor_login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.success === 1) {
+            document.getElementById('login-result').innerText = `Login Successful!`;
+            window.location.href = "/doctor-home";
+        }
+        else {
+            document.getElementById('login-result').innerText = data.error
+        }
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Ensure functions are available globally
+    window.submitLogin = submitLogin;
+    window.submitRegister = submitRegister;
+    window.randomUserLogin = randomUserLogin;
+    window.randomDoctorLogin = randomDoctorLogin;
+});

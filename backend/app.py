@@ -48,4 +48,4 @@ def serve_homepage():
 
 if __name__ == '__main__':
     init_app()
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=15555, debug=True)

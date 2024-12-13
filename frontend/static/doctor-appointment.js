@@ -60,7 +60,10 @@ window.addEventListener("DOMContentLoaded", () => {
                         document.getElementById('cancel-button').style.display = 'inline-block';
                     }
 
-                    let service_time = String(appointment.service_duration % 60) + "分鐘";
+                    let service_time = "";
+                    if (appointment.service_duration % 60 != 0 || appointment.service_duration == 0) {
+                        service_time = String(appointment.service_duration % 60) + "分鐘";
+                    }
                     if (appointment.service_duration >= 60) {
                         service_time = String(Math.floor(appointment.service_duration / 60)) + "小時" + service_time;
                     }
@@ -146,12 +149,16 @@ function reloadPetInfo() {
         </tr>`;
     
     for (let i = 0; i < pets.length; i++) {
+        let ageText = pets[i].age >= 12 ? Math.floor(Math.floor(pets[i].age / 30.41) / 12) + '歲' : '';
+        if (pets[i].age % 12 != 0 || ageText.length == 0) {
+            ageText += (ageText.length > 0 ? ' ' : '') + Math.floor(pets[i].age / 30.41) % 12 + '個月';
+        }
         petSelectorHtml += `
             <tr style='background-color: ${petIndex == i ? "#DDFFFF" : "#FFFFFF"}'>
                 <td>${petIndex == i ? '<strong>' : ''}${pets[i].name}${petIndex == i ? '</strong>' : ''}</td>
                 <td>${pets[i].species}</td>
                 <td>${pets[i].breed}</td>
-                <td>${pets[i].age}</td>
+                <td>${ageText}</td>
                 <td>${pets[i].gender}</td>
                 <td><button onclick="petIndex = ${i}; reloadPetInfo();">Select</button></td>
             </tr>
